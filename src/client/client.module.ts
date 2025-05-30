@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { CriativosModule } from './criativos/criativos.module';
 
-@Module({})
+@Module({
+  imports: [CriativosModule],
+})
 export class ClientModule {}
