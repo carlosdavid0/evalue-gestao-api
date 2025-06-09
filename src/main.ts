@@ -1,13 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'dotenv/config';
 import { AdminModule } from './admin/admin.module';
 import { ClientModule } from './client/client.module';
 
 async function bootstrap() {
   const adminApp = await NestFactory.create(AdminModule);
 
-  adminApp.setGlobalPrefix('/api/admin');
+  adminApp.setGlobalPrefix('/api');
   adminApp.enableCors();
   adminApp.useGlobalPipes(new ValidationPipe());
 
@@ -23,7 +24,7 @@ async function bootstrap() {
   await adminApp.listen(3001);
 
   const clientApp = await NestFactory.create(ClientModule);
-  clientApp.setGlobalPrefix('/api/clientes');
+  clientApp.setGlobalPrefix('/api');
   clientApp.enableCors();
   clientApp.useGlobalPipes(new ValidationPipe());
 

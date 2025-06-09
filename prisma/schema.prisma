@@ -4,14 +4,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Empresa {
   id         String    @id @default(uuid())
-  nome       String    @db.VarChar(100)
-  cnpj       String    @unique @db.VarChar(14)
+  nome       String
+  cnpj       String    @unique
   ativo      Boolean   @default(true)
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -28,10 +28,10 @@ model Empresa {
 
 model Plano {
   id             String    @id @default(uuid())
-  nome           String    @db.VarChar(100)
-  descricao      String?   @db.Text
+  nome           String
+  descricao      String?
   tokens_mensais Int
-  preco          Decimal   @db.Decimal(10, 2)
+  preco          Float
   ativo          Boolean   @default(true)
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
@@ -64,8 +64,9 @@ model Assinatura {
 
 model Usuario {
   id         String      @id @default(uuid())
-  nome       String      @db.VarChar(100)
-  email      String      @unique @db.VarChar(255)
+  nome       String
+  email      String      @unique
+  password   String
   role       RoleUsuario @default(USER)
   ativo      Boolean     @default(true)
   created_at DateTime    @default(now())
@@ -85,9 +86,11 @@ model SolicitacaoCreativo {
   id           String            @id @default(uuid())
   usuario_id   String
   empresa_id   String
+  titulo       String?
   objetivo     String?
   data         DateTime
   formato      Formato
+  link         Json?
   tokens_usado Int               @default(1)
   status       StatusSolicitacao @default(PROCESSANDO)
   created_at   DateTime          @default(now())
@@ -110,7 +113,7 @@ model TransacaoToken {
   quantidade    Int
   saldo_antes   Int
   saldo_depois  Int
-  descricao     String?       @db.Text
+  descricao     String?
   referencia_id String?
   created_at    DateTime      @default(now())
   deleted_at    DateTime?

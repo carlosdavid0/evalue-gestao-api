@@ -1,3 +1,5 @@
+import * as bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 import { PrismaClient } from '../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
@@ -55,7 +57,6 @@ async function main() {
   });
   console.log('Empresa Marketing Digital SA verificada/criada');
 
-  // Verificar e criar Assinaturas
   console.log('Verificando assinaturas existentes...');
   await prisma.assinatura.upsert({
     where: {
@@ -85,8 +86,8 @@ async function main() {
       status: 'ATIVA',
     },
   });
-  console.log('Assinatura para Marketing Digital verificada/criada');
 
+  console.log('Assinatura para Marketing Digital verificada/criada');
   // Verificar e criar Usuários
   console.log('Verificando usuários existentes...');
   const usuario1 = await prisma.usuario.upsert({
@@ -97,9 +98,23 @@ async function main() {
       email: 'joao@techsolutions.com',
       role: 'ADMIN',
       empresa_id: empresa1.id,
+      password: bcrypt.hashSync(randomUUID(), 10),
     },
   });
   console.log('Usuário João Silva verificado/criado');
+
+  await prisma.usuario.upsert({
+    where: { email: 'david@dsolucoes.dev.br' },
+    update: {},
+    create: {
+      nome: 'David',
+      email: 'david@dsolucoes.dev.br',
+      password: bcrypt.hashSync('Master@123', 10),
+      role: 'ADMIN',
+      empresa_id: empresa1.id,
+    },
+  });
+  console.log('Usuário David verificado/criado');
 
   const usuario2 = await prisma.usuario.upsert({
     where: { email: 'maria@marketingdigital.com' },
@@ -107,6 +122,7 @@ async function main() {
     create: {
       nome: 'Maria Santos',
       email: 'maria@marketingdigital.com',
+      password: bcrypt.hashSync(randomUUID(), 10),
       role: 'USER',
       empresa_id: empresa2.id,
     },
@@ -124,7 +140,9 @@ async function main() {
       id: 'solicitacao-instagram',
       usuario_id: usuario1.id,
       empresa_id: empresa1.id,
+      titulo: 'Post para Instagram',
       objetivo: 'Criar post para Instagram',
+      link: ['https://www.instagram.com/p/1234567890/'],
       data: new Date(),
       formato: 'FEED',
       tokens_usado: 1,
